@@ -1,6 +1,6 @@
 ﻿//###########################################################################
 //
-// Implementation of string format function.
+// Implementation of string format functions.
 //
 //###########################################################################
 
@@ -24,10 +24,10 @@ namespace Px
 			return ::_vscprintf(pszFormat, pArgList);
 		}
 
-		static int Format(char* pszBuffer, size_t uCapacity,
+		static int Format(char* pszOutput, size_t uCapacity,
 			const char* pszFormat, std::va_list pArgList) noexcept
 		{
-			return ::vsprintf_s(pszBuffer, uCapacity, pszFormat, pArgList);
+			return ::vsprintf_s(pszOutput, uCapacity, pszFormat, pArgList);
 		}
 	};
 
@@ -41,10 +41,10 @@ namespace Px
 			return ::_vscwprintf(pszFormat, pArgList);
 		}
 
-		static int Format(wchar_t* pszBuffer, size_t uCapacity,
+		static int Format(wchar_t* pszOutput, size_t uCapacity,
 			const wchar_t* pszFormat, std::va_list pArgList) noexcept
 		{
-			return ::vswprintf_s(pszBuffer, uCapacity, pszFormat, pArgList);
+			return ::vswprintf_s(pszOutput, uCapacity, pszFormat, pArgList);
 		}
 	};
 
@@ -60,12 +60,12 @@ namespace Px
 			return ::_vscprintf_l(reinterpret_cast<const char*>(pszFormat), sUtf8Locale, pArgList);
 		}
 
-		static int Format(char8_t* pszBuffer, size_t uCapacity,
+		static int Format(char8_t* pszOutput, size_t uCapacity,
 			const char8_t* pszFormat, std::va_list pArgList) noexcept
 		{
 			_locale_t sUtf8Locale{ _wcreate_locale(LC_CTYPE, L".UTF-8") };
 
-			return ::_vsprintf_s_l(reinterpret_cast<char*>(pszBuffer), uCapacity,
+			return ::_vsprintf_s_l(reinterpret_cast<char*>(pszOutput), uCapacity,
 				reinterpret_cast<const char*>(pszFormat), sUtf8Locale, pArgList);
 		}
 	};
@@ -78,7 +78,7 @@ namespace Px
 	{
 		using FormatTraits = Px::FormatTraits<TChar>;
 
-		std::basic_string<TChar> strResult;
+		std::basic_string<TChar> strOutput;
 
 		//get format size
 
@@ -88,10 +88,10 @@ namespace Px
 		{
 			//format text
 
-			strResult.resize(nFormatSize);
+			strOutput.resize(nFormatSize);
 
-			nFormatSize = FormatTraits::Format(strResult.data(),
-				strResult.size() + 1, pszFormat, pArgList);
+			nFormatSize = FormatTraits::Format(strOutput.data(),
+				strOutput.size() + 1, pszFormat, pArgList);
 		}
 
 		//set result size
@@ -99,9 +99,9 @@ namespace Px
 		if (nFormatSize < 0)
 			nFormatSize = 0;
 
-		strResult.resize(nFormatSize);
+		strOutput.resize(nFormatSize);
 
-		return strResult;
+		return strOutput;
 	}
 
 	//==============================================================================================
@@ -116,19 +116,19 @@ namespace Px
 
 		//format text
 
-		std::basic_string<TChar> strResult{ Px::FormatV(pszFormat, pArgList) };
+		std::basic_string<TChar> strOutput{ Px::FormatV(pszFormat, pArgList) };
 
 		//reset arg list
 
 		va_end(pArgList);
 
-		return strResult;
+		return strOutput;
 	}
 
 	//==============================================================================================
 
 	template <typename TChar>
-	inline auto AppendFormat(std::basic_string<TChar>& strResult,
+	inline auto AppendFormat(std::basic_string<TChar>& strOutput,
 		const TChar* pszFormat, ...) noexcept -> std::basic_string<TChar>&
 	{
 		//get arg list
@@ -146,7 +146,7 @@ namespace Px
 
 		//append result
 
-		return strResult.append(strAppend);
+		return strOutput.append(strAppend);
 	}
 
 	//==============================================================================================
