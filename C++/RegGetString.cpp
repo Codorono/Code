@@ -10,7 +10,7 @@
 
 #include <WinApi/Registry.h>
 
-#include <Common/Registry.h>
+#include <Registry/Registry.h>
 
 //======================================================================================================================
 
