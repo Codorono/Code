@@ -10,11 +10,9 @@
 
 #include <WinApi/FilePath.h>
 
-#include <FileSys/FilePath.h>
-
 //======================================================================================================================
 
-std::wstring Ps::GetCurrentDirectoryW()
+std::wstring Pw::GetCurrentDirectoryW()
 {
 	std::wstring strResult;
 
@@ -22,15 +20,24 @@ std::wstring Ps::GetCurrentDirectoryW()
 
 	std::array<wchar_t, _PMAC_STACK_ALLOC_CHARS> arrStackBuffer;
 
+	DWORD dwBufferSize{ static_cast<DWORD>(arrStackBuffer.size()) };
+
 	//get current directory
 
-	size_t zResultSize{ Pw::GetCurrentDirectoryW(arrStackBuffer.size(), arrStackBuffer.data()) };
+	DWORD dwResultSize{ ::GetCurrentDirectoryW(dwBufferSize, arrStackBuffer.data()) };
+
+	//failure
+
+	if (dwResultSize == 0)
+	{
+		THROW_LAST_ERROR();
+	}
 
 	//success
 
-	if (zResultSize < arrStackBuffer.size())
+	else if (dwResultSize < dwBufferSize)
 	{
-		strResult.assign(arrStackBuffer.data(), zResultSize);
+		strResult.assign(arrStackBuffer.data(), dwResultSize);
 	}
 
 	//buffer too small
@@ -41,21 +48,28 @@ std::wstring Ps::GetCurrentDirectoryW()
 
 		for (;;)
 		{
+			dwBufferSize = dwResultSize;
+
 			//allocate heap buffer
 
-			size_t zBufferSize{ zResultSize };
-
-			std::unique_ptr<wchar_t[]> ptrHeapBuffer{ std::make_unique_for_overwrite<wchar_t[]>(zBufferSize) };
+			std::unique_ptr<wchar_t[]> ptrHeapBuffer{ std::make_unique_for_overwrite<wchar_t[]>(dwBufferSize) };
 
 			//get current directory
 
-			zResultSize = Pw::GetCurrentDirectoryW(zBufferSize, ptrHeapBuffer.get());
+			dwResultSize = ::GetCurrentDirectoryW(dwBufferSize, ptrHeapBuffer.get());
+
+			//failure
+
+			if (dwResultSize == 0)
+			{
+				THROW_LAST_ERROR();
+			}
 
 			//success
 
-			if (zResultSize < zBufferSize)
+			else if (dwResultSize < dwBufferSize)
 			{
-				strResult.assign(ptrHeapBuffer.get(), zResultSize);
+				strResult.assign(ptrHeapBuffer.get(), dwResultSize);
 
 				break;
 			}
