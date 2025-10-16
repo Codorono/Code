@@ -40,7 +40,7 @@ std::wstring Pw::GetCurrentDirectoryW()
 		strResult.assign(arrStackBuffer.data(), dwResultSize);
 	}
 
-	//buffer too small
+	//stack buffer too small
 
 	else
 	{
@@ -48,6 +48,8 @@ std::wstring Pw::GetCurrentDirectoryW()
 
 		for (;;)
 		{
+			//increase buffer size
+
 			dwBufferSize = dwResultSize;
 
 			//allocate heap buffer
