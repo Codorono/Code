@@ -22,7 +22,7 @@ std::wstring Pw::GetWindowTextW(HWND hWnd, size_t zBufferSize)
 	{
 		//allocate stack buffer
 
-		std::array<wchar_t, _PMAC_STACK_ALLOC_CHARS> arrStackBuffer;
+		std::array<wchar_t, _PMAC_STACK_ALLOC_WCHARS> arrStackBuffer;
 
 		int nBufferSize{ static_cast<int>(arrStackBuffer.size()) };
 

@@ -18,7 +18,7 @@ std::wstring Pw::GetCurrentDirectoryW()
 
 	//allocate stack buffer
 
-	std::array<wchar_t, _PMAC_STACK_ALLOC_CHARS> arrStackBuffer;
+	std::array<wchar_t, _PMAC_STACK_ALLOC_WCHARS> arrStackBuffer;
 
 	DWORD dwBufferSize{ static_cast<DWORD>(arrStackBuffer.size()) };
 
